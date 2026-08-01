@@ -91,6 +91,7 @@ public class walk : MonoBehaviour
             if (animTimer >= frameTime)
             {
                 animTimer -= Time.deltaTime;
+                animTimer -= frameTime;
                 animIndex = (animIndex + 1) % walkSprites.Length;
             }
             sr.sprite = walkSprites[animIndex];
