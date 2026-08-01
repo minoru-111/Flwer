@@ -11,6 +11,16 @@ public class walk : MonoBehaviour
 
     public float checkDistance = 0.1f;
 
+    public Sprite[] walkSprites;
+
+    public Sprite idleSptite;
+
+    public float frameTime = 0.1f;
+
+    public float animTimer = 0f;
+
+    public int animIndex = 0;
+
     public float footOffset = 0.01f;
 
     private Rigidbody2D    rbody;
@@ -66,6 +76,30 @@ public class walk : MonoBehaviour
             jumpRequested = false;
             isJumping = true;
             rbody.AddForce(Vector2.up * jumppower, ForceMode2D.Impulse);
+        }
+
+        Animate();
+    }
+
+    void Animate()
+    {
+        bool isWalking = moveInput.x != 0 && isGrounded;
+
+        if (isWalking && walkSprites.Length >0)
+        {
+            animTimer += Time.deltaTime;
+            if (animTimer >= frameTime)
+            {
+                animTimer -= Time.deltaTime;
+                animIndex = (animIndex + 1) % walkSprites.Length;
+            }
+            sr.sprite = walkSprites[animIndex];
+        }
+        else
+        {
+            animTimer = 0f;
+            animIndex = 0;
+            if (idleSptite != null) sr.sprite = idleSptite;
         }
     }
 }
