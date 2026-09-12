@@ -1,16 +1,21 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class SceneChange : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public GameObject targetObject; 
+    public string tagName; 
+    public string sceneName; 
 
-    // Update is called once per frame
-    void Update()
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        
+
+        if (collision.gameObject == targetObject || 
+            collision.gameObject.tag == tagName)
+        {
+            SceneManager.LoadScene(sceneName); 
+        }
     }
 }
