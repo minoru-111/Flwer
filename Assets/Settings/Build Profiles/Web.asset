@@ -23,6 +23,9 @@ MonoBehaviour:
   - m_enabled: 1
     m_path: Assets/Scene/area1.unity
     m_guid: 2fce90d6302034743a6f1322829703f1
+  - m_enabled: 1
+    m_path: Assets/Scene/area2.unity
+    m_guid: f421d16e147168e4880d3320b28a0205
   m_HasScriptingDefines: 0
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
