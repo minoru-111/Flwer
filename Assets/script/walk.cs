@@ -37,6 +37,9 @@ public class walk : MonoBehaviour
 
     private bool isJumping = false;
 
+    public float knockbackDuration = 0.25f;
+    private float knockbackTimer = 0f;
+
     void Awake()
     {
         rbody = GetComponent<Rigidbody2D>();
@@ -66,20 +69,42 @@ public class walk : MonoBehaviour
         if (rbody.linearVelocity.y <= 0)  isJumping = false;
     }
 
-    void FixedUpdate()
+    
+
+void FixedUpdate()
+{
+    if (knockbackTimer > 0f)
+    {
+        knockbackTimer -= Time.fixedDeltaTime;
+    }
+    else
     {
         float vx = moveInput.x * speed;
-        rbody.linearVelocity = new Vector2(vx, rbody.linearVelocity.y);
-
-        if (jumpRequested)
-        {
-            jumpRequested = false;
-            isJumping = true;
-            rbody.AddForce(Vector2.up * jumppower, ForceMode2D.Impulse);
-        }
-
-        Animate();
+        rbody.linearVelocity = new Vector2(
+            vx,
+            rbody.linearVelocity.y
+        );
     }
+
+    if (jumpRequested && knockbackTimer <= 0f)
+    {
+        jumpRequested = false;
+        isJumping = true;
+        rbody.AddForce(
+            Vector2.up * jumppower,
+            ForceMode2D.Impulse
+        );
+    }
+
+    Animate();
+}
+
+public void StartKnockback(float duration)
+{
+    knockbackTimer = duration;
+}
+
+
 
     void Animate()
     {
