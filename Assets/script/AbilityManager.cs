@@ -6,6 +6,7 @@ public class AbilityManager : MonoBehaviour
     public static AbilityManager Instance;
 
     public bool hasDoubleJump = false;
+    public bool hasAirDash = false;
 
     void Awake()
     {
@@ -24,5 +25,11 @@ public class AbilityManager : MonoBehaviour
     {
         hasDoubleJump = true;
         Debug.Log("ダブルジャンプの能力を保存！");
+    }
+
+    public void UnlockAirDash()
+    {
+        hasAirDash = true;
+        Debug.Log("空中ダッシュの能力を保存！");
     }
 }

@@ -28,6 +28,7 @@ public class walk : MonoBehaviour
     public bool canDoubleJump = false;
     private int jumpsRemaining = 1;
 
+    // ノックバック
     public float knockbackDuration = 0.25f;
     private float knockbackTimer = 0f;
 
@@ -42,7 +43,6 @@ public class walk : MonoBehaviour
 
     void Start()
     {
-        // Sceneを移動しても能力を引き継ぐ
         if (AbilityManager.Instance != null &&
             AbilityManager.Instance.hasDoubleJump)
         {
@@ -55,27 +55,26 @@ public class walk : MonoBehaviour
         moveInput = value.Get<Vector2>();
 
         if (moveInput.x != 0)
+        {
             sr.flipX = moveInput.x < 0;
-    }
-
-    public void OnJump()
-    {
-        if (isGrounded && jumpsRemaining > 0)
-        {
-            jumpRequested = true;
-        }
-        else if (!isGrounded &&
-                 canDoubleJump &&
-                 jumpsRemaining > 0)
-        {
-            jumpRequested = true;
         }
     }
 
     void Update()
     {
+        // スペースキーまたは上矢印キーでジャンプ
+        if (Keyboard.current != null &&
+            (Keyboard.current.spaceKey.wasPressedThisFrame ||
+             Keyboard.current.upArrowKey.wasPressedThisFrame))
+        {
+            RequestJump();
+        }
+
+        // 地面判定
         float myHeight = col.bounds.extents.y;
-        float footy = transform.position.y - myHeight - footOffset;
+        float footy = transform.position.y
+                      - myHeight
+                      - footOffset;
 
         Vector2 startRay = new Vector2(
             transform.position.x,
@@ -91,6 +90,20 @@ public class walk : MonoBehaviour
         if (isGrounded)
         {
             jumpsRemaining = canDoubleJump ? 2 : 1;
+        }
+    }
+
+    private void RequestJump()
+    {
+        if (isGrounded && jumpsRemaining > 0)
+        {
+            jumpRequested = true;
+        }
+        else if (!isGrounded &&
+                 canDoubleJump &&
+                 jumpsRemaining > 0)
+        {
+            jumpRequested = true;
         }
     }
 
@@ -115,7 +128,6 @@ public class walk : MonoBehaviour
             jumpRequested = false;
             jumpsRemaining--;
 
-            // 2回目のジャンプも安定させる
             rbody.linearVelocity = new Vector2(
                 rbody.linearVelocity.x,
                 0f
@@ -172,7 +184,9 @@ public class walk : MonoBehaviour
             animIndex = 0;
 
             if (idleSptite != null)
+            {
                 sr.sprite = idleSptite;
+            }
         }
     }
 }
