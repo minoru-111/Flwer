@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,17 +23,35 @@ public class walk : MonoBehaviour
     private bool jumpRequested = false;
     private bool isGrounded = false;
 
+    // =========================
     // ダブルジャンプ
+    // =========================
+
     public bool canDoubleJump = false;
     private int jumpsRemaining = 1;
 
+    // =========================
     // ノックバック
+    // =========================
+
     public float knockbackDuration = 0.25f;
     private float knockbackTimer = 0f;
+
+    // =========================
+    // 風
+    // =========================
+
+    [HideInInspector]
+    public Vector2 windForce = Vector2.zero;
+
+    [HideInInspector]
+    public float windSpeedMultiplier = 1f;
 
     void Awake()
     {
         rbody = GetComponent<Rigidbody2D>();
+
+        // 回転しないようにする
         rbody.constraints = RigidbodyConstraints2D.FreezeRotation;
 
         col = GetComponent<Collider2D>();
@@ -43,6 +60,7 @@ public class walk : MonoBehaviour
 
     void Start()
     {
+        // 保存されているダブルジャンプを確認
         if (AbilityManager.Instance != null &&
             AbilityManager.Instance.hasDoubleJump)
         {
@@ -50,10 +68,15 @@ public class walk : MonoBehaviour
         }
     }
 
+    // =========================
+    // 移動入力
+    // =========================
+
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
 
+        // 左右を向く
         if (moveInput.x != 0)
         {
             sr.flipX = moveInput.x < 0;
@@ -62,7 +85,10 @@ public class walk : MonoBehaviour
 
     void Update()
     {
-        // スペースキーまたは上矢印キーでジャンプ
+        // =========================
+        // ジャンプ
+        // =========================
+
         if (Keyboard.current != null &&
             (Keyboard.current.spaceKey.wasPressedThisFrame ||
              Keyboard.current.upArrowKey.wasPressedThisFrame))
@@ -70,35 +96,47 @@ public class walk : MonoBehaviour
             RequestJump();
         }
 
+        // =========================
         // 地面判定
+        // =========================
+
         float myHeight = col.bounds.extents.y;
-        float footy = transform.position.y
-                      - myHeight
-                      - footOffset;
 
-        Vector2 startRay = new Vector2(
-            transform.position.x,
-            footy
-        );
+        float footy =
+            transform.position.y -
+            myHeight -
+            footOffset;
 
-        isGrounded = Physics2D.Raycast(
-            startRay,
-            Vector2.down,
-            checkDistance
-        );
+        Vector2 startRay =
+            new Vector2(transform.position.x, footy);
 
+        isGrounded =
+            Physics2D.Raycast(
+                startRay,
+                Vector2.down,
+                checkDistance
+            );
+
+        // 地面に着いたらジャンプ回数回復
         if (isGrounded)
         {
             jumpsRemaining = canDoubleJump ? 2 : 1;
         }
     }
 
+    // =========================
+    // ジャンプ要求
+    // =========================
+
     private void RequestJump()
     {
+        // 地面にいる
         if (isGrounded && jumpsRemaining > 0)
         {
             jumpRequested = true;
         }
+
+        // 空中でダブルジャンプ
         else if (!isGrounded &&
                  canDoubleJump &&
                  jumpsRemaining > 0)
@@ -109,30 +147,71 @@ public class walk : MonoBehaviour
 
     void FixedUpdate()
     {
+        // =========================
+        // ノックバック
+        // =========================
+
         if (knockbackTimer > 0f)
         {
             knockbackTimer -= Time.fixedDeltaTime;
         }
         else
         {
+            // =========================
+            // 通常の横移動
+            // =========================
+
             float vx = moveInput.x * speed;
 
-            rbody.linearVelocity = new Vector2(
-                vx,
-                rbody.linearVelocity.y
-            );
+            // =========================
+            // 風の影響
+            // =========================
+
+            // まず風そのものの力を加える
+            vx += windForce.x;
+
+            // 風がある場合
+            if (windForce.x != 0)
+            {
+                // 風と逆方向に進もうとしているか確認
+                bool movingAgainstWind =
+                    (windForce.x > 0 && moveInput.x < 0) ||
+                    (windForce.x < 0 && moveInput.x > 0);
+
+                // 逆風のときだけ移動速度を下げる
+                if (movingAgainstWind)
+                {
+                    vx *= windSpeedMultiplier;
+                }
+            }
+
+            // 実際に移動
+            rbody.linearVelocity =
+                new Vector2(
+                    vx,
+                    rbody.linearVelocity.y
+                );
         }
 
-        if (jumpRequested && knockbackTimer <= 0f)
+        // =========================
+        // ジャンプ
+        // =========================
+
+        if (jumpRequested &&
+            knockbackTimer <= 0f)
         {
             jumpRequested = false;
+
             jumpsRemaining--;
 
-            rbody.linearVelocity = new Vector2(
-                rbody.linearVelocity.x,
-                0f
-            );
+            // 縦速度をリセット
+            rbody.linearVelocity =
+                new Vector2(
+                    rbody.linearVelocity.x,
+                    0f
+                );
 
+            // ジャンプ
             rbody.AddForce(
                 Vector2.up * jumppower,
                 ForceMode2D.Impulse
@@ -143,8 +222,16 @@ public class walk : MonoBehaviour
             jumpRequested = false;
         }
 
+        // =========================
+        // アニメーション
+        // =========================
+
         Animate();
     }
+
+    // =========================
+    // ダブルジャンプ解放
+    // =========================
 
     public void UnlockDoubleJump()
     {
@@ -154,14 +241,47 @@ public class walk : MonoBehaviour
         Debug.Log("ダブルジャンプ解放！");
     }
 
+    // =========================
+    // ノックバック開始
+    // =========================
+
     public void StartKnockback(float duration)
     {
         knockbackTimer = duration;
     }
 
+    // =========================
+    // 風を設定
+    // =========================
+
+    public void SetWind(
+        Vector2 force,
+        float speedMultiplier
+    )
+    {
+        windForce = force;
+        windSpeedMultiplier = speedMultiplier;
+    }
+
+    // =========================
+    // 風を解除
+    // =========================
+
+    public void ClearWind()
+    {
+        windForce = Vector2.zero;
+        windSpeedMultiplier = 1f;
+    }
+
+    // =========================
+    // 歩きアニメーション
+    // =========================
+
     void Animate()
     {
-        bool isWalking = moveInput.x != 0 && isGrounded;
+        bool isWalking =
+            moveInput.x != 0 &&
+            isGrounded;
 
         if (isWalking &&
             walkSprites != null &&
@@ -172,11 +292,14 @@ public class walk : MonoBehaviour
             if (animTimer >= frameTime)
             {
                 animTimer -= frameTime;
+
                 animIndex =
-                    (animIndex + 1) % walkSprites.Length;
+                    (animIndex + 1) %
+                    walkSprites.Length;
             }
 
-            sr.sprite = walkSprites[animIndex];
+            sr.sprite =
+                walkSprites[animIndex];
         }
         else
         {

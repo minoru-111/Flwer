@@ -499,7 +499,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleButton
   sceneFader: {fileID: 1961816341}
-  sceneName: area1
+  sceneName: SimpleArea
 --- !u!61 &1344701409
 BoxCollider2D:
   m_ObjectHideFlags: 0
