@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class LadderClimb : MonoBehaviour
+public class Hashigo : MonoBehaviour
 {
     public float climbSpeed = 4f;
 
@@ -23,29 +23,39 @@ public class LadderClimb : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerWalk = GetComponent<walk>();
-        playerCollider = GetComponent<Collider2D>();
 
-        originalGravity = rb.gravityScale;
+        playerWalk =
+            GetComponent<walk>();
+
+        playerCollider =
+            GetComponent<Collider2D>();
+
+        originalGravity =
+            rb.gravityScale;
     }
 
     void Update()
     {
-        if (!nearLadder || currentLadder == null)
+        if (!nearLadder ||
+            currentLadder == null)
+        {
             return;
+        }
 
         // =========================
-        // 梯子の一番上まで来たか
+        // 梯子の一番上
         // =========================
 
         if (isClimbing)
         {
-            float ladderTop = currentLadder.bounds.max.y;
+            float ladderTop =
+                currentLadder.bounds.max.y;
 
             float playerBottom =
                 playerCollider.bounds.min.y;
 
-            if (playerBottom >= ladderTop - topMargin)
+            if (playerBottom >=
+                ladderTop - topMargin)
             {
                 ExitLadderFromTop();
                 return;
@@ -53,7 +63,7 @@ public class LadderClimb : MonoBehaviour
         }
 
         // =========================
-        // 梯子を登り始める
+        // 梯子に登る
         // =========================
 
         if (!isClimbing &&
@@ -67,45 +77,61 @@ public class LadderClimb : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!isClimbing || Keyboard.current == null)
+        if (!isClimbing ||
+            Keyboard.current == null)
+        {
             return;
+        }
+
+        // =========================
+        // 左右
+        // =========================
 
         float horizontal = 0f;
 
-        // =========================
-        // 左右で梯子から出る
-        // =========================
-
         if (Keyboard.current.leftArrowKey.isPressed)
+        {
             horizontal = -1f;
+        }
 
         if (Keyboard.current.rightArrowKey.isPressed)
+        {
             horizontal = 1f;
+        }
 
         if (horizontal != 0f)
         {
             StopClimbing();
 
             float speed =
-                playerWalk != null ? playerWalk.speed : 4f;
+                playerWalk != null
+                ? playerWalk.speed
+                : 4f;
 
             rb.linearVelocity =
-                new Vector2(horizontal * speed, 0f);
+                new Vector2(
+                    horizontal * speed,
+                    0f
+                );
 
             return;
         }
 
         // =========================
-        // 上下移動
+        // 上下
         // =========================
 
         float vertical = 0f;
 
         if (Keyboard.current.upArrowKey.isPressed)
+        {
             vertical = 1f;
+        }
 
         if (Keyboard.current.downArrowKey.isPressed)
+        {
             vertical = -1f;
+        }
 
         rb.linearVelocity =
             new Vector2(
@@ -115,69 +141,76 @@ public class LadderClimb : MonoBehaviour
     }
 
     // =========================
-    // 梯子を開始
+    // 梯子開始
     // =========================
 
     void StartClimbing()
     {
         isClimbing = true;
 
-        // 重力を完全に止める
         rb.gravityScale = 0f;
 
-        rb.linearVelocity = Vector2.zero;
+        rb.linearVelocity =
+            Vector2.zero;
 
         if (playerWalk != null)
+        {
             playerWalk.enabled = false;
+        }
     }
 
     // =========================
-    // 梯子を終了
+    // 梯子終了
     // =========================
 
     void StopClimbing()
     {
         isClimbing = false;
 
-        rb.gravityScale = originalGravity;
+        rb.gravityScale =
+            originalGravity;
 
-        rb.linearVelocity = Vector2.zero;
+        rb.linearVelocity =
+            Vector2.zero;
 
         if (playerWalk != null)
+        {
             playerWalk.enabled = true;
+        }
     }
 
     // =========================
-    // 梯子の一番上から出る
+    // 梯子の一番上
     // =========================
 
     void ExitLadderFromTop()
     {
-        if (!isClimbing || currentLadder == null)
+        if (!isClimbing ||
+            currentLadder == null)
+        {
             return;
+        }
 
-        float ladderTop = currentLadder.bounds.max.y;
+        float ladderTop =
+            currentLadder.bounds.max.y;
 
-        // プレイヤーの高さ
         float playerHeight =
             playerCollider.bounds.size.y;
 
-        // プレイヤーの中心を
-        // 梯子の上端 + プレイヤー半分の高さ
-        // にピッタリ合わせる
+        // =========================
+        // プレイヤーを梯子の上へ
+        // =========================
+
         float newY =
             ladderTop +
             playerHeight / 2f +
             0.01f;
 
-        // =========================
-        // 先にプレイヤーを正しい位置へ移動
-        // =========================
-
-        rb.position = new Vector2(
-            rb.position.x,
-            newY
-        );
+        rb.position =
+            new Vector2(
+                rb.position.x,
+                newY
+            );
 
         // =========================
         // 梯子状態を解除
@@ -186,14 +219,18 @@ public class LadderClimb : MonoBehaviour
         isClimbing = false;
 
         // 重力を戻す
-        rb.gravityScale = originalGravity;
+        rb.gravityScale =
+            originalGravity;
 
-        // 縦方向の速度を完全に0
-        rb.linearVelocity = Vector2.zero;
+        // 速度を完全に0
+        rb.linearVelocity =
+            Vector2.zero;
 
-        // 通常の移動を戻す
+        // 通常状態へ
         if (playerWalk != null)
+        {
             playerWalk.enabled = true;
+        }
 
         Debug.Log("梯子の上に到着！");
     }
@@ -202,7 +239,8 @@ public class LadderClimb : MonoBehaviour
     // 梯子に入った
     // =========================
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(
+        Collider2D other)
     {
         if (other.CompareTag("Ladder"))
         {
@@ -215,7 +253,8 @@ public class LadderClimb : MonoBehaviour
     // 梯子から出た
     // =========================
 
-    void OnTriggerExit2D(Collider2D other)
+    void OnTriggerExit2D(
+        Collider2D other)
     {
         if (other.CompareTag("Ladder"))
         {

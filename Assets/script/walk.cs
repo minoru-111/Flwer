@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class walk : MonoBehaviour
 {
-    public float speed = 5f;
+    public float speed = 4f;
     public float jumppower = 8f;
     public float checkDistance = 0.1f;
 
@@ -51,8 +51,8 @@ public class walk : MonoBehaviour
     {
         rbody = GetComponent<Rigidbody2D>();
 
-        // 回転しないようにする
-        rbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+        rbody.constraints =
+            RigidbodyConstraints2D.FreezeRotation;
 
         col = GetComponent<Collider2D>();
         sr = GetComponent<SpriteRenderer>();
@@ -60,7 +60,6 @@ public class walk : MonoBehaviour
 
     void Start()
     {
-        // 保存されているダブルジャンプを確認
         if (AbilityManager.Instance != null &&
             AbilityManager.Instance.hasDoubleJump)
         {
@@ -76,7 +75,6 @@ public class walk : MonoBehaviour
     {
         moveInput = value.Get<Vector2>();
 
-        // 左右を向く
         if (moveInput.x != 0)
         {
             sr.flipX = moveInput.x < 0;
@@ -100,7 +98,8 @@ public class walk : MonoBehaviour
         // 地面判定
         // =========================
 
-        float myHeight = col.bounds.extents.y;
+        float myHeight =
+            col.bounds.extents.y;
 
         float footy =
             transform.position.y -
@@ -108,7 +107,10 @@ public class walk : MonoBehaviour
             footOffset;
 
         Vector2 startRay =
-            new Vector2(transform.position.x, footy);
+            new Vector2(
+                transform.position.x,
+                footy
+            );
 
         isGrounded =
             Physics2D.Raycast(
@@ -117,10 +119,11 @@ public class walk : MonoBehaviour
                 checkDistance
             );
 
-        // 地面に着いたらジャンプ回数回復
+        // 地面にいるならジャンプ回数回復
         if (isGrounded)
         {
-            jumpsRemaining = canDoubleJump ? 2 : 1;
+            jumpsRemaining =
+                canDoubleJump ? 2 : 1;
         }
     }
 
@@ -130,13 +133,11 @@ public class walk : MonoBehaviour
 
     private void RequestJump()
     {
-        // 地面にいる
-        if (isGrounded && jumpsRemaining > 0)
+        if (isGrounded &&
+            jumpsRemaining > 0)
         {
             jumpRequested = true;
         }
-
-        // 空中でダブルジャンプ
         else if (!isGrounded &&
                  canDoubleJump &&
                  jumpsRemaining > 0)
@@ -153,39 +154,38 @@ public class walk : MonoBehaviour
 
         if (knockbackTimer > 0f)
         {
-            knockbackTimer -= Time.fixedDeltaTime;
+            knockbackTimer -=
+                Time.fixedDeltaTime;
         }
         else
         {
             // =========================
-            // 通常の横移動
+            // 通常移動
             // =========================
 
-            float vx = moveInput.x * speed;
+            float vx =
+                moveInput.x * speed;
 
             // =========================
-            // 風の影響
+            // 風
             // =========================
 
-            // まず風そのものの力を加える
             vx += windForce.x;
 
-            // 風がある場合
             if (windForce.x != 0)
             {
-                // 風と逆方向に進もうとしているか確認
                 bool movingAgainstWind =
-                    (windForce.x > 0 && moveInput.x < 0) ||
-                    (windForce.x < 0 && moveInput.x > 0);
+                    (windForce.x > 0 &&
+                     moveInput.x < 0) ||
+                    (windForce.x < 0 &&
+                     moveInput.x > 0);
 
-                // 逆風のときだけ移動速度を下げる
                 if (movingAgainstWind)
                 {
                     vx *= windSpeedMultiplier;
                 }
             }
 
-            // 実際に移動
             rbody.linearVelocity =
                 new Vector2(
                     vx,
@@ -204,14 +204,12 @@ public class walk : MonoBehaviour
 
             jumpsRemaining--;
 
-            // 縦速度をリセット
             rbody.linearVelocity =
                 new Vector2(
                     rbody.linearVelocity.x,
                     0f
                 );
 
-            // ジャンプ
             rbody.AddForce(
                 Vector2.up * jumppower,
                 ForceMode2D.Impulse
@@ -221,10 +219,6 @@ public class walk : MonoBehaviour
         {
             jumpRequested = false;
         }
-
-        // =========================
-        // アニメーション
-        // =========================
 
         Animate();
     }
@@ -242,7 +236,7 @@ public class walk : MonoBehaviour
     }
 
     // =========================
-    // ノックバック開始
+    // ノックバック
     // =========================
 
     public void StartKnockback(float duration)
@@ -256,11 +250,11 @@ public class walk : MonoBehaviour
 
     public void SetWind(
         Vector2 force,
-        float speedMultiplier
-    )
+        float speedMultiplier)
     {
         windForce = force;
-        windSpeedMultiplier = speedMultiplier;
+        windSpeedMultiplier =
+            speedMultiplier;
     }
 
     // =========================
