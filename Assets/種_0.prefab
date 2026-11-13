@@ -143,7 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7419f1f3d3e46b5418132ac8ddf5e521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::destroy
-  target: {fileID: 0}
+  target: {fileID: 1949022416095252448, guid: 390996197015563499993f203db5f6a7, type: 3}
   sound: {fileID: 8300000, guid: a017436591efefe4a94fe12868d5c9c2, type: 3}
 --- !u!82 &5558347370949139152
 AudioSource:

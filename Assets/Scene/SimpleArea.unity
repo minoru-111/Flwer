@@ -15424,6 +15424,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u7A2E_0"
       objectReference: {fileID: 0}
+    - target: {fileID: 5558347370949139152, guid: adf2e433fe1b6ab4cade7ce4e909f9c0, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: a017436591efefe4a94fe12868d5c9c2, type: 3}
+    - target: {fileID: 5558347370949139152, guid: adf2e433fe1b6ab4cade7ce4e909f9c0, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
