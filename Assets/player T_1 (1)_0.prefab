@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6975773799103899056}
   - component: {fileID: 4615954340066712498}
   - component: {fileID: 8964840571673397844}
+  - component: {fileID: 2136188438118560410}
   m_Layer: 0
   m_Name: player T_1 (1)_0
   m_TagString: Player
@@ -219,6 +220,8 @@ MonoBehaviour:
   footOffset: 0.01
   canDoubleJump: 0
   knockbackDuration: 0.25
+  windForce: {x: 0, y: 0}
+  windSpeedMultiplier: 1
 --- !u!114 &8964840571673397844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,3 +237,17 @@ MonoBehaviour:
   dashSpeed: 15
   dashDuration: 0.15
   dashCooldown: 1
+--- !u!114 &2136188438118560410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1949022416095252448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79c3fc9142aa0544fa42ba8b9c831215, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Hashigo
+  climbSpeed: 4
+  topMargin: 0.05
